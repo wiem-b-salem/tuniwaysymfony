@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Guide Profile - TuniWay</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<section class="guide-profile">
+    <div class="container">
+        <h1>Guide Dashboard</h1>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Guide Info -->
+        <div class="guide-card">
+            <img th:src="${guide.profilePicture}" alt="Guide Photo" class="guide-avatar">
+            <h2 th:text="${guide.username}">Guide Name</h2>
+            <p th:text="${guide.email}">Email</p>
+            <p th:text="${guide.bio}">Bio</p>
+        </div>
+
+        <!-- Create Tour Form -->
+        <div class="create-tour">
+            <h3>Create New Tour</h3>
+            <form action="/guide/tour/create" method="post">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="titre" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Price (TND)</label>
+                    <input type="number" name="prix" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="date">
+                </div>
+                <button type="submit" class="btn-primary">Create Tour</button>
+            </form>
+        </div>
+
+        <!-- Tours List -->
+        <div class="tours-list">
+            <h3>My Tours</h3>
+            <div th:each="tour : ${tours}" class="tour-item">
+                <h4 th:text="${tour.titre}">Tour Title</h4>
+                <p th:text="${tour.description}">Description</p>
+                <p th:text="${tour.prix} + ' TND'">Price</p>
+                <p th:text="${tour.date}">Date</p>
+                <form th:action="@{/guide/tour/delete/{id}(id=${tour.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reservations -->
+        <div class="reservations-section">
+            <h3>Bookings</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reservation : ${reservations}">
+                    <td th:text="${reservation.client?.username}">Client</td>
+                    <td th:text="${reservation.dateReservation}">Date</td>
+                    <td th:text="${reservation.status}">Status</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

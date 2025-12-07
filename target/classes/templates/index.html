@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuniWay - Home</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<!-- Navbar Fragment -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<!-- Hero Section -->
+<div th:replace="~{fragments/hero :: hero}"></div>
+
+<!-- Travel Stats Section -->
+<div th:replace="~{fragments/travel-stats :: travel-stats}"></div>
+
+<!-- Destinations Section -->
+<div th:replace="~{fragments/destinations :: destinations}"></div>
+
+<!-- Testimonial Section -->
+<div th:replace="~{fragments/testimonial :: testimonial}"></div>
+
+<!-- Footer Fragment -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Chatbot -->
+<div th:replace="~{fragments/chatbot :: chatbot}"></div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

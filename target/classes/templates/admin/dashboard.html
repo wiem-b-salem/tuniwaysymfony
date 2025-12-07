@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - TuniWay</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2>TuniWay Admin</h2>
+        <nav>
+            <a href="/admin/dashboard" class="active">Dashboard</a>
+            <a href="/admin/places">Places</a>
+            <a href="/admin/users">Users</a>
+            <a href="/admin/reviews">Reviews</a>
+            <a href="/admin/tours">Tours</a>
+            <a href="/auth/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+        <h1>Dashboard Overview</h1>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p th:text="${totalUsers}">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Places</h3>
+                <p th:text="${totalPlaces}">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Reviews</h3>
+                <p th:text="${totalReviews}">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Tours</h3>
+                <p th:text="${totalTours}">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Reservations</h3>
+                <p th:text="${totalReservations}">0</p>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

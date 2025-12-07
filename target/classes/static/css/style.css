@@ -1,0 +1,178 @@
+/* TuniWay Custom Colors */
+:root {
+    --tuni-orange: #FF9D00;
+    --tuni-teal: #2C9FA3;
+    --tuni-dark: #1a202c;
+}
+
+.bg-tuni-orange {
+    background-color: var(--tuni-orange);
+}
+
+.text-tuni-orange {
+    color: var(--tuni-orange);
+}
+
+.border-tuni-orange {
+    border-color: var(--tuni-orange);
+}
+
+.bg-tuni-teal {
+    background-color: var(--tuni-teal);
+}
+
+.text-tuni-teal {
+    color: var(--tuni-teal);
+}
+
+.bg-tuni-dark {
+    background-color: var(--tuni-dark);
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        top: -100px;
+        opacity: 0;
+    }
+    to {
+        top: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes slideLeft {
+    from {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideRight {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideBottom {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes wiggle {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-8px);
+    }
+    50% {
+        transform: translateY(0);
+    }
+    75% {
+        transform: translateY(-8px);
+    }
+}
+
+.slide-down {
+    animation: slideDown 0.8s ease-out;
+}
+
+.slide-left {
+    animation: slideLeft 0.8s ease-out;
+}
+
+.slide-right {
+    animation: slideRight 0.8s ease-out;
+}
+
+.slide-bottom {
+    animation: slideBottom 0.8s ease-out;
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+.wiggle-1 {
+    animation: wiggle 3s ease-in-out infinite;
+}
+
+.wiggle-2 {
+    animation: wiggle 3s ease-in-out 0.5s infinite;
+}
+
+.wiggle-3 {
+    animation: wiggle 3s ease-in-out 1s infinite;
+}
+
+/* Dark mode */
+.dark {
+    background-color: var(--tuni-dark);
+    color: #e2e8f0;
+}
+
+/* Smooth transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Card hover effects */
+.grid > div {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.grid > div:hover {
+    transform: translateY(-8px);
+}
+
+/* Button effects */
+button {
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--tuni-orange);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #e68a00;
+}

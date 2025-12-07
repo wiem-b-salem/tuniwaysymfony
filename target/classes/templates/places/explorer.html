@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Explore - TuniWay</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<section class="explore-page">
+    <div class="container">
+        <h1>Explore Destinations</h1>
+
+        <!-- Filters -->
+        <div class="filters">
+            <form action="/explore" method="get">
+                <select name="category">
+                    <option value="">All Categories</option>
+                    <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                </select>
+                <button type="submit">Filter</button>
+            </form>
+        </div>
+
+        <!-- Places Grid -->
+        <div class="places-grid">
+            <div th:each="place : ${places}" class="place-card">
+                <img th:src="${place.imageUrl}" th:alt="${place.name}">
+                <div class="place-info">
+                    <h3 th:text="${place.name}">Place Name</h3>
+                    <p th:text="${place.category}">Category</p>
+                    <p th:text="${place.city}">City</p>
+                    <p th:text="${place.description}">Description</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Places - Admin</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="admin-layout">
+    <aside class="sidebar">
+        <h2>TuniWay Admin</h2>
+        <nav>
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/places" class="active">Places</a>
+            <a href="/admin/users">Users</a>
+            <a href="/admin/reviews">Reviews</a>
+            <a href="/admin/tours">Tours</a>
+            <a href="/auth/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="admin-content">
+        <h1>Manage Places</h1>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- Create Place Form -->
+        <div class="form-section">
+            <h3>Add New Place</h3>
+            <form action="/admin/places/create" method="post">
+                <input type="text" name="name" placeholder="Name" required>
+                <select name="category" required>
+                    <option value="">Select Category</option>
+                    <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                </select>
+                <input type="text" name="city" placeholder="City" required>
+                <textarea name="description" placeholder="Description"></textarea>
+                <input type="text" name="imageUrl" placeholder="Image URL">
+                <input type="number" name="latitude" placeholder="Latitude" step="any">
+                <input type="number" name="longitude" placeholder="Longitude" step="any">
+                <button type="submit" class="btn-primary">Create Place</button>
+            </form>
+        </div>
+
+        <!-- Places Table -->
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>City</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="place : ${places}">
+                <td th:text="${place.name}">Name</td>
+                <td th:text="${place.category}">Category</td>
+                <td th:text="${place.city}">City</td>
+                <td>
+                    <form th:action="@{/admin/places/delete/{id}(id=${place.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+</body>
+</html>

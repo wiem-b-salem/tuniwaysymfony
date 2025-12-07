@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuniWay - Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('/images/logsignback.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .auth-logo {
+            display: block;
+            margin: 0 auto 30px;
+            height: 60px;
+            width: auto;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .password-group {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #4a90e2;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background-color: #357abd;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #c3e6cb;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-card">
+        <img th:src="@{/images/logo.png}" alt="Tuniway Logo" class="auth-logo">
+
+        <form th:action="@{/register}" method="post">
+
+            <!-- Error Message -->
+            <div th:if="${error}" class="error-message" th:text="${error}">
+            </div>
+
+            <!-- Success Message -->
+            <div th:if="${message}" class="success-message" th:text="${message}">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <input
+                        type="text"
+                        name="username"
+                        class="form-input"
+                        placeholder="Nom"
+                        required
+                />
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <input
+                        type="email"
+                        name="email"
+                        class="form-input"
+                        placeholder="Email"
+                        required
+                />
+            </div>
+
+            <div style="margin-bottom: 20px;" class="password-group">
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-input"
+                        placeholder="Mot de Passe (min 6 caractères)"
+                        required
+                        minlength="6"
+                        style="padding-right: 100px;"
+                />
+                <button
+                        type="button"
+                        class="password-toggle"
+                        onclick="togglePassword()"
+                >
+                    <span id="toggle-text">Afficher</span>
+                </button>
+            </div>
+
+            <!-- Role Selector -->
+            <div style="margin-bottom: 20px;">
+                <select name="role" class="form-input">
+                    <option value="CLIENT">Client (Tourist)</option>
+                    <option value="GUIDE">Guide (Tour Guide)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="submit-button">
+                S'inscrire
+            </button>
+        </form>
+
+        <p style="text-align: center; color: #666; font-size: 14px; margin-top: 20px;">
+            Vous avez déjà un compte ? <a th:href="@{/login}" style="color: #4a90e2; text-decoration: none; font-weight: 600;">Se connecter</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleText = document.getElementById('toggle-text');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleText.textContent = 'Masquer';
+        } else {
+            passwordInput.type = 'password';
+            toggleText.textContent = 'Afficher';
+        }
+    }
+</script>
+</body>
+</html>
