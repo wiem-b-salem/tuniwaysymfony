@@ -47,6 +47,11 @@ symfony console doctrine:database:create
 symfony console doctrine:migrations:migrate
 ```
 
+5. running docrine fixture:
+```bash
+symfony console doctrine:fixtures:load
+```
+
 ## Lancement
 
 Démarrez l'application avec Symfony CLI :
