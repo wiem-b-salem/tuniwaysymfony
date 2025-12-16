@@ -33,6 +33,7 @@ final class TourPersonnaliseController extends AbstractController
     #[IsGranted('ROLE_GUIDE')]
     public function myTours(): Response
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
@@ -48,13 +49,13 @@ final class TourPersonnaliseController extends AbstractController
     public function new(Request $request): Response
     {
         $tour = new TourPersonnalise();
+        $tour->setGuide($this->getUser());
+        $tour->setCreatedAt(new \DateTimeImmutable());
+
         $form = $this->createForm(\App\Form\TourPersonnaliseType::class, $tour);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $tour->setGuide($this->getUser());
-            $tour->setCreatedAt(new \DateTimeImmutable());
-
             $this->tourService->create($tour);
 
             return $this->redirectToRoute('app_tour_my_tours', [], Response::HTTP_SEE_OTHER);
