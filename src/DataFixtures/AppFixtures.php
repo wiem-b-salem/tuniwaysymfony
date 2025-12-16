@@ -245,6 +245,54 @@ class AppFixtures extends Fixture
 
 
 
+        // 5. Create Sample Events
+        $eventsData = [
+            [
+                'name' => 'Tunis Jazz Festival',
+                'description' => 'Annual jazz festival featuring international artists.',
+                'location' => 'Carthage Amphitheatre',
+                'price' => 50.00,
+                'startDate' => new \DateTime('2025-07-10'),
+                'endDate' => new \DateTime('2025-07-15'),
+                'startTime' => new \DateTime('19:00:00'),
+                'endTime' => new \DateTime('23:00:00')
+            ],
+            [
+                'name' => 'Sahara Marathon',
+                'description' => 'A unique marathon experience through the sand dunes of the Sahara.',
+                'location' => 'Douz, Tunisia',
+                'price' => 120.00,
+                'startDate' => new \DateTime('2025-03-20'),
+                'endDate' => new \DateTime('2025-03-20'),
+                'startTime' => new \DateTime('06:00:00'),
+                'endTime' => new \DateTime('14:00:00')
+            ],
+            [
+                'name' => 'Medina Food Tour',
+                'description' => 'Guided culinary tour through the ancient Medina streets.',
+                'location' => 'Tunis Medina',
+                'price' => 35.00,
+                'startDate' => new \DateTime('2025-05-05'),
+                'endDate' => new \DateTime('2025-05-05'),
+                'startTime' => new \DateTime('10:00:00'),
+                'endTime' => new \DateTime('13:00:00')
+            ]
+        ];
+
+        foreach ($eventsData as $data) {
+            $event = new \App\Entity\Event();
+            $event->setName($data['name']);
+            $event->setDescription($data['description']);
+            $event->setLocation($data['location']);
+            $event->setPrice($data['price']);
+            $event->setStartDate($data['startDate']);
+            $event->setEndDate($data['endDate']);
+            $event->setStartTime($data['startTime']);
+            $event->setEndTime($data['endTime']);
+
+            $manager->persist($event);
+        }
+
         $manager->flush();
     }
 }

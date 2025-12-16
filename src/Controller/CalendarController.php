@@ -19,60 +19,40 @@ class CalendarController extends AbstractController
     }
 
     #[Route('/events', name: 'app_calendar_events', methods: ['GET'])]
-    public function events(TourPersonnaliseRepository $tourRepository, NationalHolidayRepository $holidayRepository): JsonResponse
-    {
+    public function events(
+        TourPersonnaliseRepository $tourRepository,
+        NationalHolidayRepository $holidayRepository,
+        \App\Repository\EventRepository $eventRepository
+    ): JsonResponse {
         $events = [];
 
-        // Add Holidays
+        // 1. Add Admin-Created Events
+        $adminEvents = $eventRepository->findAll();
+        foreach ($adminEvents as $event) {
+            $events[] = [
+                'title' => $event->getName(),
+                'start' => $event->getStartDate() ? $event->getStartDate()->format('Y-m-d') : '',
+                'end' => $event->getEndDate() ? $event->getEndDate()->format('Y-m-d') : '', // FullCalendar end date is exclusive, might need +1 day if it's all day
+                // To keep it simple, we just use the date. If time is present, we can append it.
+                // 'start' => $event->getStartDate()->format('Y-m-d') . 'T' . $event->getStartTime()->format('H:i:s'),
+                'color' => '#6f42c1', // Purple for Special Events
+                'url' => '/admin/event/' . $event->getId() // Link to details? Or just view
+            ];
+        }
+
+        // 2. Add Holidays
         $holidays = $holidayRepository->findAll();
         foreach ($holidays as $holiday) {
             $events[] = [
                 'title' => 'Holiday: ' . $holiday->getName(),
                 'start' => $holiday->getDate()->format('Y-m-d'),
-                'display' => 'background', // Or specific color
-                'color' => '#ff9f89' // Light red
+                'display' => 'background',
+                'color' => '#ff9f89'
             ];
         }
 
-        // Add Tours (Assuming they occur on available dates? Or just show all distinct booked dates?
-        // Requirement said: "Tours scheduled on specific dates"
-        // But Tour entity doesn't have a recurring schedule/date entity.
-        // It seems reservations define the dates. Or Tours are just 'offerings'.
-        // But "Capacity management per date" implies Tours have specific dates or are available every day.
-        // I will assume for now we show DATES where Reservations exist (i.e. Scheduled Tours) 
-        // OR better: The requirement says later "Tours scheduled on specific dates". 
-        // For now, I will display "Available Tours" if I knew their schedule.
-        // Given current schema, a Tour is an offering without specific dates until booked.
-        // I will display date-based reservations for "My Tours" if user is guide?
-        // Or "Shared Tours" implying public view?
-        // "Add a calendar view where users can see: Tours scheduled on specific dates".
-        // This implies there should be a `TourDate` or `TourSchedule` entity. 
-        // Since I don't have that, I'll list existing Reservations as "Confirmed Tours".
-        // AND maybe just assume Tours are available daily?
-        // Let's use existing APPROVED reservations as "Scheduled Tours".
-
-        // BETTER APPROACH for "Users can see Tours scheduled":
-        // Show APPROVED reservations as "Confirmed Trips" that others can maybe join? 
-        // Or just show Holidays. 
-        // I will query Confirmed Reservations. Each reservation represents a booked tour instance.
-
-        /* 
-           Simpler Interpretation: 
-           Just show Holidays for now + maybe arbitrary tour availability if asked.
-           But to meet "Tours scheduled", I will fetch APPROVED reservations.
-        */
-
-        /* 
-           Wait, "When the maximum number of participants is reached for a specific date".
-           This implies ANY date is valid until full.
-           So I should probably show "Full" dates.
-           I will iterate through all APPROVED reservations, group by Tour & Date, check sum(persons) >= maxPersons.
-           If Full, mark as red event "Full: Tour Name".
-        */
-
+        // 3. Add Tours (Existing Logic)
         $tours = $tourRepository->findAll();
-        // This acts as a global check. Realistically this is heavy computation for controller.
-
         foreach ($tours as $tour) {
             // Get all approved reservations for this tour
             $approvals = $tour->getReservations()->filter(fn($r) => $r->getStatus() === 'APPROVED');
@@ -90,11 +70,10 @@ class CalendarController extends AbstractController
                     $events[] = [
                         'title' => 'FULL: ' . $tour->getTitle(),
                         'start' => $date,
-                        'color' => '#dc3545', // Red
+                        'color' => '#dc3545',
                         'url' => '/tour/' . $tour->getId()
                     ];
                 } else {
-                    // Optionally show available tours?
                     $events[] = [
                         'title' => 'Tour: ' . $tour->getTitle() . ' (' . ($tour->getMaxPersons() - $count) . ' left)',
                         'start' => $date,
