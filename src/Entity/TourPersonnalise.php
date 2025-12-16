@@ -48,7 +48,7 @@ class TourPersonnalise
     #[ORM\JoinColumn(nullable: false)]
     private ?User $guide = null;
 
-    #[ORM\ManyToOne(inversedBy: 'tourPersonnalises')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true)]
     private ?User $client = null;
 
