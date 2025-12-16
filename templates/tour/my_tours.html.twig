@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Tours{% endblock %}
+
+{% block body %}
+    <h1>My Tours</h1>
+
+    <a href="{{ path('app_tour_new') }}" class="btn btn-primary mb-3">Create New Tour</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Duration</th>
+                <th>Max Persons</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for tour in tours %}
+            <tr>
+                <td>{{ tour.title }}</td>
+                <td>{{ tour.price }}</td>
+                <td>{{ tour.duration }}</td>
+                <td>{{ tour.maxPersons }}</td>
+                <td>{{ tour.createdAt ? tour.createdAt|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_tour_show', {'id': tour.id}) }}" class="btn btn-sm btn-info">Show</a>
+                    <a href="{{ path('app_tour_edit', {'id': tour.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">You haven't created any tours yet.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

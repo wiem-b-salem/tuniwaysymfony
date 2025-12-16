@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tour Details{% endblock %}
+
+{% block body %}
+    <h1>{{ tour.title }}</h1>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Tour Info</h5>
+             <p><strong>Guide:</strong> {{ tour.guide.username }}</p>
+             <p><strong>Price:</strong> ${{ tour.price }}</p>
+             <p><strong>Duration:</strong> {{ tour.duration }} hours</p>
+             <p><strong>Max Persons:</strong> {{ tour.maxPersons }}</p>
+             <p><strong>Description:</strong> {{ tour.description }}</p>
+        </div>
+    </div>
+
+    <h3>Included Places</h3>
+    <ul>
+    {% for place in tour.places %}
+        <li>
+            <a href="{{ path('app_place_show', {'id': place.id}) }}">{{ place.name }}</a>
+        </li>
+    {% else %}
+        <li>No places selected.</li>
+    {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_tour_index') }}" class="btn btn-secondary">Back to List</a>
+
+    {% if is_granted('ROLE_GUIDE') and app.user == tour.guide or is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_tour_edit', {'id': tour.id}) }}" class="btn btn-warning">Edit</a>
+    {% endif %}
+
+{% endblock %}

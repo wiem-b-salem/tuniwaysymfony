@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shared Tours{% endblock %}
+
+{% block body %}
+    <h1>Shared Tours</h1>
+
+    <div class="row">
+    {% for tour in tours %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ tour.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">by {{ tour.guide.username|default('Unknown') }}</h6>
+                    <p class="card-text">{{ tour.description|slice(0, 100) ~ '...' }}</p>
+                    <p class="card-text">
+                        <strong>Price:</strong> ${{ tour.price }}<br>
+                        <strong>Duration:</strong> {{ tour.duration }} hours<br>
+                        <strong>Max Persons:</strong> {{ tour.maxPersons }}
+                    </p>
+                    <a href="{{ path('app_tour_show', {'id': tour.id}) }}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p>No tours available at the moment.</p>
+    {% endfor %}
+    </div>
+{% endblock %}

@@ -9,6 +9,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('app_place_index') }}">Places</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_tour_index') }}">Shared Tours</a>
+                </li>
                 {% if is_granted('ROLE_USER') %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_reservation_index') }}">Mes Réservations</a>
@@ -19,7 +22,7 @@
                 {% endif %}
                 {% if is_granted('ROLE_GUIDE') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_tour_personnalise_index') }}">Mes Tours</a>
+                        <a class="nav-link" href="{{ path('app_tour_my_tours') }}">My Tours</a>
                     </li>
                 {% endif %}
             </ul>

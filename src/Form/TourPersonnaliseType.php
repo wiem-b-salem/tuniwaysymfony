@@ -16,19 +16,16 @@ class TourPersonnaliseType extends AbstractType
         $builder
             ->add('title')
             ->add('description')
-            ->add('duration')
+            ->add('duration', null, [
+                'label' => 'Duration (hours)',
+            ])
             ->add('price')
             ->add('maxPersons')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('guide', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
-            ->add('client', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
+            ->add('places', EntityType::class, [
+                'class' => \App\Entity\Place::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => true, // Checkboxes for multiple selection
             ])
         ;
     }

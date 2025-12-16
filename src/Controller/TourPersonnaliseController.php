@@ -7,10 +7,10 @@ use App\Entity\User;
 use App\Service\TourPersonnaliseService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/tour/personnalise')]
 final class TourPersonnaliseController extends AbstractController
@@ -21,132 +21,111 @@ final class TourPersonnaliseController extends AbstractController
     ) {
     }
 
-    #[Route(name: 'app_tour_personnalise_index', methods: ['GET'])]
-    public function index(): JsonResponse
+    #[Route(name: 'app_tour_index', methods: ['GET'])]
+    public function index(): Response
     {
-        return $this->json(
-            $this->tourService->findAll(),
-            Response::HTTP_OK,
-            [],
-            ['groups' => 'tour:read']
-        );
+        return $this->render('tour/index.html.twig', [
+            'tours' => $this->tourService->findAll(),
+        ]);
     }
 
-    #[Route('/new', name: 'app_tour_personnalise_new', methods: ['POST'])]
-    public function new(Request $request): JsonResponse
+    #[Route('/my-tours', name: 'app_tour_my_tours', methods: ['GET'])]
+    #[IsGranted('ROLE_GUIDE')]
+    public function myTours(): Response
     {
-        $data = $this->parsePayload($request);
-        if ($data === null) {
-            return $this->json(['error' => 'Invalid JSON payload'], Response::HTTP_BAD_REQUEST);
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
         }
 
-        $required = ['title', 'duration', 'price', 'maxPersons', 'guideId', 'clientId'];
-        foreach ($required as $field) {
-            if (!isset($data[$field])) {
-                return $this->json(['error' => sprintf('Field "%s" is required', $field)], Response::HTTP_BAD_REQUEST);
-            }
-        }
+        return $this->render('tour/my_tours.html.twig', [
+            'tours' => $user->getTourPersonnalises(),
+        ]);
+    }
 
-        $guide = $this->entityManager->getRepository(User::class)->find($data['guideId']);
-        $client = $this->entityManager->getRepository(User::class)->find($data['clientId']);
-
-        if (!$guide || !$client) {
-            return $this->json(['error' => 'Guide or Client not found'], Response::HTTP_NOT_FOUND);
-        }
-
+    #[Route('/new', name: 'app_tour_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_GUIDE')]
+    public function new(Request $request): Response
+    {
         $tour = new TourPersonnalise();
-        $tour->setTitle($data['title']);
-        $tour->setDescription($data['description'] ?? null);
-        $tour->setDuration((int) $data['duration']);
-        $tour->setPrice((float) $data['price']);
-        $tour->setMaxPersons((int) $data['maxPersons']);
-        $tour->setCreatedAt(new \DateTimeImmutable());
-        $tour->setGuide($guide);
-        $tour->setClient($client);
+        $form = $this->createForm(\App\Form\TourPersonnaliseType::class, $tour);
+        $form->handleRequest($request);
 
-        $tour = $this->tourService->create($tour);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $tour->setGuide($this->getUser());
+            $tour->setCreatedAt(new \DateTimeImmutable());
 
-        return $this->json($tour, Response::HTTP_CREATED, [], ['groups' => 'tour:read']);
+            $this->tourService->create($tour);
+
+            return $this->redirectToRoute('app_tour_my_tours', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('tour/new.html.twig', [
+            'tour' => $tour,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/{id}', name: 'app_tour_personnalise_show', methods: ['GET'])]
-    public function show(int $id): JsonResponse
+    #[Route('/{id}', name: 'app_tour_show', methods: ['GET'])]
+    public function show(int $id): Response
     {
         $tour = $this->tourService->find($id);
         if (!$tour) {
-            return $this->json(['error' => 'Tour not found'], Response::HTTP_NOT_FOUND);
+            throw $this->createNotFoundException('Tour not found');
         }
 
-        return $this->json($tour, Response::HTTP_OK, [], ['groups' => 'tour:read']);
+        return $this->render('tour/show.html.twig', [
+            'tour' => $tour,
+        ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_tour_personnalise_edit', methods: ['PUT'])]
-    public function edit(int $id, Request $request): JsonResponse
+    #[Route('/{id}/edit', name: 'app_tour_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_GUIDE')]
+    public function edit(int $id, Request $request): Response
     {
         $tour = $this->tourService->find($id);
         if (!$tour) {
-            return $this->json(['error' => 'Tour not found'], Response::HTTP_NOT_FOUND);
+            throw $this->createNotFoundException('Tour not found');
         }
 
-        $data = $this->parsePayload($request);
-        if ($data === null) {
-            return $this->json(['error' => 'Invalid JSON payload'], Response::HTTP_BAD_REQUEST);
+        // Security check: Only owner or admin
+        if ($tour->getGuide() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
         }
 
-        if (isset($data['title'])) {
-            $tour->setTitle($data['title']);
-        }
-        if (array_key_exists('description', $data)) {
-            $tour->setDescription($data['description']);
-        }
-        if (isset($data['duration'])) {
-            $tour->setDuration((int) $data['duration']);
-        }
-        if (isset($data['price'])) {
-            $tour->setPrice((float) $data['price']);
-        }
-        if (isset($data['maxPersons'])) {
-            $tour->setMaxPersons((int) $data['maxPersons']);
-        }
-        if (isset($data['guideId'])) {
-            $guide = $this->entityManager->getRepository(User::class)->find($data['guideId']);
-            if (!$guide) {
-                return $this->json(['error' => 'Guide not found'], Response::HTTP_NOT_FOUND);
-            }
-            $tour->setGuide($guide);
-        }
-        if (isset($data['clientId'])) {
-            $client = $this->entityManager->getRepository(User::class)->find($data['clientId']);
-            if (!$client) {
-                return $this->json(['error' => 'Client not found'], Response::HTTP_NOT_FOUND);
-            }
-            $tour->setClient($client);
+        $form = $this->createForm(\App\Form\TourPersonnaliseType::class, $tour);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->tourService->update($tour);
+
+            return $this->redirectToRoute('app_tour_my_tours', [], Response::HTTP_SEE_OTHER);
         }
 
-        $tour = $this->tourService->update($tour);
-
-        return $this->json($tour, Response::HTTP_OK, [], ['groups' => 'tour:read']);
+        return $this->render('tour/edit.html.twig', [
+            'tour' => $tour,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/{id}', name: 'app_tour_personnalise_delete', methods: ['DELETE'])]
-    public function delete(int $id): JsonResponse
+    #[Route('/{id}', name: 'app_tour_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_GUIDE')]
+    public function delete(Request $request, int $id): Response
     {
         $tour = $this->tourService->find($id);
         if (!$tour) {
-            return $this->json(['error' => 'Tour not found'], Response::HTTP_NOT_FOUND);
+            throw $this->createNotFoundException('Tour not found');
         }
 
-        $this->tourService->delete($tour);
-
-        return $this->json(['message' => 'Tour deleted successfully'], Response::HTTP_OK);
-    }
-
-    private function parsePayload(Request $request): ?array
-    {
-        try {
-            return $request->toArray();
-        } catch (\JsonException) {
-            return null;
+        // Security check
+        if ($tour->getGuide() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
         }
+
+        if ($this->isCsrfTokenValid('delete' . $tour->getId(), $request->request->get('_token'))) {
+            $this->tourService->delete($tour);
+        }
+
+        return $this->redirectToRoute('app_tour_my_tours', [], Response::HTTP_SEE_OTHER);
     }
 }

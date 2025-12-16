@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TourPersonnaliseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -45,8 +47,19 @@ class TourPersonnalise
     private ?User $guide = null;
 
     #[ORM\ManyToOne(inversedBy: 'tourPersonnalises')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $client = null;
+
+    /**
+     * @var Collection<int, Place>
+     */
+    #[ORM\ManyToMany(targetEntity: Place::class)]
+    private Collection $places;
+
+    public function __construct()
+    {
+        $this->places = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
