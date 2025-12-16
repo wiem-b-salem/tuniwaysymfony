@@ -25,6 +25,48 @@ final class PlaceController extends AbstractController
         ]);
     }
 
+    #[Route('/admin', name: 'app_place_admin_index', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function adminIndex(): Response
+    {
+        return $this->render('place/admin_index.html.twig', [
+            'places' => $this->placeService->findAll(),
+        ]);
+    }
+
+    #[Route('/{id}/favorite', name: 'app_place_favorite', methods: ['POST', 'GET'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function toggleFavorite(Place $place, \Doctrine\ORM\EntityManagerInterface $em): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // Check if already favorited
+        $existingFavori = null;
+        foreach ($place->getFavoris() as $favori) {
+            if ($favori->getUser() === $user) {
+                $existingFavori = $favori;
+                break;
+            }
+        }
+
+        if ($existingFavori) {
+            $em->remove($existingFavori);
+            $this->addFlash('success', 'Removed from favorites.');
+        } else {
+            $favori = new \App\Entity\Favori();
+            $favori->setUser($user);
+            $favori->setPlace($place);
+            $favori->setCreatedAt(new \DateTimeImmutable());
+            $em->persist($favori);
+            $this->addFlash('success', 'Added to favorites!');
+        }
+
+        $em->flush();
+
+        return $this->redirectToRoute('app_place_index');
+    }
+
     #[Route('/new', name: 'app_place_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request): Response

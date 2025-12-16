@@ -265,4 +265,22 @@ class Place
 
         return $this;
     }
+
+    public function getAverageRating(): float
+    {
+        $reviews = $this->reviews->filter(function (Review $review) {
+            return $review->getStatus() === 'APPROVED';
+        });
+
+        if ($reviews->isEmpty()) {
+            return 0;
+        }
+
+        $total = 0;
+        foreach ($reviews as $review) {
+            $total += $review->getRating();
+        }
+
+        return round($total / $reviews->count(), 1);
+    }
 }

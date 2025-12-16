@@ -1,53 +1,78 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Place index{% endblock %}
+{% block title %}Places{% endblock %}
 
 {% block body %}
-    <h1>Place index</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Explore Places</h1>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_place_admin_index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-gear"></i> Manage Places
+            </a>
+        {% endif %}
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Latitude</th>
-                <th>Longtitude</th>
-                <th>Address</th>
-                <th>ImageUrl</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for place in places %}
-            <tr>
-                <td>{{ place.id }}</td>
-                <td>{{ place.name }}</td>
-                <td>{{ place.description }}</td>
-                <td>{{ place.category }}</td>
-                <td>{{ place.latitude }}</td>
-                <td>{{ place.longtitude }}</td>
-                <td>{{ place.address }}</td>
-                <td>{{ place.imageUrl }}</td>
-                <td>{{ place.createdAt ? place.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_place_show', {'id': place.id}) }}">show</a>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_place_edit', {'id': place.id}) }}">edit</a>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for place in places %}
+        <div class="col">
+            <div class="card h-100 placeholder-glow">
+                {% if place.imageUrl %}
+                    <img src="{{ place.imageUrl }}" class="card-img-top" alt="{{ place.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span class="fs-4">No Image</span>
+                    </div>
+                {% endif %}
+                
+                <div class="card-body position-relative">
+                    {% if app.user %}
+                        <a href="{{ path('app_place_favorite', {'id': place.id}) }}" class="position-absolute top-0 end-0 m-3 text-danger fs-4 text-decoration-none">
+                            {% set isFav = false %}
+                            {% for fav in place.favoris %}
+                                {% if fav.user == app.user %}
+                                    {% set isFav = true %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if isFav %}
+                                ♥
+                            {% else %}
+                                ♡
+                            {% endif %}
+                        </a>
                     {% endif %}
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="10">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
 
-    {% if is_granted('ROLE_ADMIN') %}
-        <a href="{{ path('app_place_new') }}">Create new</a>
-    {% endif %}
+                    <h5 class="card-title text-primary fw-bold">{{ place.name }}</h5>
+                    
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-secondary me-2">{{ place.category }}</span>
+                        <span class="text-warning fw-bold">★ {{ place.averageRating > 0 ? place.averageRating : 'New' }}</span>
+                    </div>
+
+                    <p class="card-text text-muted small">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill text-danger me-1" viewBox="0 0 16 16">
+                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                        </svg>
+                        {{ place.address ?? 'Location not specified' }}
+                    </p>
+                    
+                    <p class="card-text text-truncate">{{ place.description }}</p>
+
+                    <a href="{{ path('app_place_show', {'id': place.id}) }}" class="btn btn-outline-primary w-100 mt-2">View Details</a>
+                </div>
+                <!-- Optional Footer for Edit link if Admin (though Admin has separate view now) -->
+                {% if is_granted('ROLE_ADMIN') %}
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{{ path('app_place_edit', {'id': place.id}) }}" class="btn btn-sm btn-link text-muted p-0">Edit</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12 text-center py-5">
+            <h3>No places found</h3>
+            <p>Check back later for new destinations!</p>
+        </div>
+    {% endfor %}
+    </div>
 {% endblock %}

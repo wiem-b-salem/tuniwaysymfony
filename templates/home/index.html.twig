@@ -3,13 +3,30 @@
 {% block title %}Welcome - TuniWay{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <div class="text-center">
-            <h1>Welcome to TuniWay</h1>
-            <p class="lead">Your Smart Tourist Platform for Tunisia</p>
-
+    <div class="p-5 mb-4 bg-light rounded-3 text-center" style="background: linear-gradient(135deg, var(--primary-color) 0%, #2980b9 100%); color: white;">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Welcome to TuniWay</h1>
+            <p class="col-md-8 fs-4 mx-auto">Your Smart Tourist Platform for Tunisia. Explore hidden gems, book tours with expert guides, and plan your perfect trip.</p>
             <div class="mt-4">
-                <a href="{{ path('app_place_index') }}" class="btn btn-primary btn-lg">Explore Places</a>
+                <a href="{{ path('app_place_index') }}" class="btn btn-light btn-lg text-primary fw-bold px-4">Start Exploring</a>
+                <a href="{{ path('app_tour_index') }}" class="btn btn-outline-light btn-lg fw-bold px-4 mx-2">Find Tours</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-md-stretch">
+        <div class="col-md-6 mb-4">
+            <div class="h-100 p-5 text-white bg-dark rounded-3" style="background-color: var(--secondary-color) !important;">
+                <h2>Discover Places</h2>
+                <p>Browse through our curated list of historical sites, beaches, museums, and more. Find the best spots to visit.</p>
+                <a href="{{ path('app_place_index') }}" class="btn btn-outline-light">Browse Places</a>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="h-100 p-5 bg-white border rounded-3 shadow-sm">
+                <h2 class="text-primary">Custom Tours</h2>
+                <p>Connect with local guides to create a personalized tour experience tailored just for you.</p>
+                <a href="{{ path('app_tour_index') }}" class="btn btn-outline-primary">View Tours</a>
             </div>
         </div>
     </div>

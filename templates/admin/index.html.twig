@@ -3,42 +3,66 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block body %}
-    <h1 class="mb-4">Admin Dashboard</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary fw-bold">Admin Dashboard</h1>
+        <span class="badge bg-secondary p-2">Administrator Area</span>
+    </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">User Management</h5>
-                    <p class="card-text">Manage Admins, Guides, and Regular Users.</p>
-                    <a href="{{ path('app_user_index') }}" class="btn btn-primary">Manage Users</a>
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body py-5">
+                    <div class="mb-3 text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
+                            <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.176.593.69.758 1.457.76 1.72-.003.052-.029.12-.068.167h-7.954zM2.5 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zM2.5 1a1 1 0 0 0 -1 1v1a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V2a1 1 0 0 0 -1-1h-3z"/>
+                        </svg>
+                    </div>
+                    <h5 class="card-title fw-bold">Users</h5>
+                    <p class="card-text text-muted mb-4">Manage Admins, Guides, & Users.</p>
+                    <a href="{{ path('app_user_index') }}" class="btn btn-outline-primary w-100 stretched-link">Manage Users</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Review Moderation</h5>
-                    <p class="card-text">Approve or delete user reviews.</p>
-                    <a href="{{ path('app_review_admin_index') }}" class="btn btn-primary">Manage Reviews</a>
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body py-5">
+                     <div class="mb-3 text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">
+                            <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                        </svg>
+                    </div>
+                    <h5 class="card-title fw-bold">Reviews</h5>
+                    <p class="card-text text-muted mb-4">Moderate user reviews.</p>
+                    <a href="{{ path('app_review_admin_index') }}" class="btn btn-outline-secondary w-100 stretched-link">Manage Reviews</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Places</h5>
-                    <p class="card-text">Manage Places database.</p>
-                    <a href="{{ path('app_place_index') }}" class="btn btn-primary">Manage Places</a>
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body py-5">
+                    <div class="mb-3 text-success">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                            <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"/>
+                            <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        </svg>
+                    </div>
+                    <h5 class="card-title fw-bold">Places</h5>
+                    <p class="card-text text-muted mb-4">Manage database of places.</p>
+                    <a href="{{ path('app_place_index') }}" class="btn btn-outline-success w-100 stretched-link">Manage Places</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Tours</h5>
-                    <p class="card-text">Manage Tours created by guides.</p>
-                    <a href="{{ path('app_tour_index') }}" class="btn btn-primary">Manage Tours</a>
+        <div class="col-md-6 col-lg-3">
+             <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body py-5">
+                    <div class="mb-3 text-info">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-map" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.502.502 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103zM10 1.91l-4-.8v12.98l4 .8V1.91zm1 12.98 4-.8V1.11l-4 .8v12.98zm-6-.8V1.11l-4 .8v12.98l4-.8z"/>
+                        </svg>
+                    </div>
+                    <h5 class="card-title fw-bold">Tours</h5>
+                    <p class="card-text text-muted mb-4">Manage guide tours.</p>
+                    <a href="{{ path('app_tour_index') }}" class="btn btn-outline-info w-100 stretched-link">Manage Tours</a>
                 </div>
             </div>
         </div>
