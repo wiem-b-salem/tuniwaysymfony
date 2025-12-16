@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Reservations{% endblock %}
+
+{% block body %}
+    <h1>Manage Incoming Reservations</h1>
+
+    {% if reservations is empty %}
+        <p>No reservations found for your tours.</p>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Tour</th>
+                        <th>User</th>
+                        <th>Persons</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for r in reservations %}
+                    <tr>
+                        <td>{{ r.reservationDate|date('Y-m-d') }}</td>
+                        <td>{{ r.tour.title }}</td>
+                        <td>{{ r.user.username }}</td>
+                        <td>{{ r.numbersOfPersons }}</td>
+                        <td>
+                            <span class="badge {{ r.status == 'APPROVED' ? 'bg-success' : (r.status == 'REJECTED' ? 'bg-danger' : 'bg-warning') }}">
+                                {{ r.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if r.status == 'PENDING' %}
+                                <form method="post" action="{{ path('app_reservation_approve', {'id': r.id}) }}" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ r.id) }}">
+                                    <button class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{{ path('app_reservation_reject', {'id': r.id}) }}" style="display:inline-block; margin-left: 5px;" onsubmit="return confirm('Reject this reservation?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ r.id) }}">
+                                    <button class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

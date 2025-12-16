@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tour Calendar{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #calendar {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <h1 class="text-center mb-4">Tour Calendar & Holidays</h1>
+    
+    <div id="calendar"></div>
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          events: '{{ path('app_calendar_events') }}',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,dayGridWeek,dayGridDay'
+          }
+        });
+        calendar.render();
+      });
+    </script>
+{% endblock %}

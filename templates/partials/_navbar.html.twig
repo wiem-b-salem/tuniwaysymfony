@@ -12,6 +12,9 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_calendar_index') }}">Calendar</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_place_index') }}">Places</a>
                     </li>
                     <li class="nav-item">
@@ -27,6 +30,9 @@
                         {% if is_granted('ROLE_GUIDE') %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_tour_my_tours') }}">My Tours</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_reservation_manage') }}">Incoming Reservations</a>
                             </li>
                         {% endif %}
                     {% endif %}

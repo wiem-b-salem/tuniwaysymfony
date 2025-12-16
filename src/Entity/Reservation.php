@@ -21,7 +21,7 @@ class Reservation
 
     #[ORM\Column(length: 50)]
     #[Groups(['reservation:read'])]
-    private ?string $status = null;
+    private ?string $status = 'PENDING';
 
     #[ORM\Column]
     #[Groups(['reservation:read'])]
@@ -39,7 +39,7 @@ class Reservation
     #[Groups(['reservation:read'])]
     private ?string $type = 'PLACE';
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: true)]
     private ?TourPersonnalise $tour = null;
 
@@ -47,7 +47,7 @@ class Reservation
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Place $Place = null;
 
     public function getId(): ?int

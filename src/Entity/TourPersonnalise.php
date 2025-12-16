@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\TourPersonnaliseRepository;
 use App\Entity\Review;
+use App\Entity\Reservation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -67,9 +68,48 @@ class TourPersonnalise
     {
         $this->places = new ArrayCollection();
         $this->reviews = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     // ... (keep existing methods)
+
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'tour')]
+    private Collection $reservations;
+
+    // ... (keep review collection getter)
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setTour($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getTour() === $this) {
+                $reservation->setTour(null);
+            }
+        }
+
+        return $this;
+    }
 
     /**
      * @return Collection<int, Review>

@@ -1,43 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Reservation index{% endblock %}
+{% block title %}My Reservations{% endblock %}
 
 {% block body %}
-    <h1>Reservation index</h1>
+    <h1>My Reservations</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>ReservationDate</th>
-                <th>Status</th>
-                <th>NumbersOfPersons</th>
-                <th>TotalPrice</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for reservation in reservations %}
-            <tr>
-                <td>{{ reservation.id }}</td>
-                <td>{{ reservation.reservationDate ? reservation.reservationDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ reservation.status }}</td>
-                <td>{{ reservation.numbersOfPersons }}</td>
-                <td>{{ reservation.totalPrice }}</td>
-                <td>{{ reservation.createdAt ? reservation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_reservation_show', {'id': reservation.id}) }}">show</a>
-                    <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_reservation_new') }}">Create new</a>
+    {% if reservations is empty %}
+        <p>You have no reservations yet.</p>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Tour/Place</th>
+                    <th>Persons</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for reservation in reservations %}
+                <tr>
+                    <td>{{ reservation.reservationDate|date('Y-m-d') }}</td>
+                    <td>
+                        {% if reservation.tour %}
+                            Tour: <a href="{{ path('app_tour_show', {'id': reservation.tour.id}) }}">{{ reservation.tour.title }}</a>
+                        {% elseif reservation.place %}
+                            Place: <a href="{{ path('app_place_show', {'id': reservation.place.id}) }}">{{ reservation.place.name }}</a>
+                        {% endif %}
+                    </td>
+                    <td>{{ reservation.numbersOfPersons }}</td>
+                    <td>{{ reservation.totalPrice }} DT</td>
+                    <td>
+                        <span class="badge {{ reservation.status == 'APPROVED' ? 'bg-success' : (reservation.status == 'REJECTED' ? 'bg-danger' : 'bg-warning') }}">
+                            {{ reservation.status }}
+                        </span>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}

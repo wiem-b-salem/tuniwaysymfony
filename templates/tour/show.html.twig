@@ -29,6 +29,27 @@
 
     <a href="{{ path('app_tour_index') }}" class="btn btn-secondary">Back to List</a>
 
+    <div class="card mb-4">
+        <div class="card-header">Book this Tour</div>
+        <div class="card-body">
+            {% if app.user %}
+                <form action="{{ path('app_reservation_book', {'id': tour.id}) }}" method="post">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" id="date" name="date" class="form-control" required min="{{ 'now'|date('Y-m-d') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="persons" class="form-label">Number of Persons</label>
+                        <input type="number" id="persons" name="persons" class="form-control" min="1" max="{{ tour.maxPersons }}" value="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Request Reservation</button>
+                </form>
+            {% else %}
+                <p>Please <a href="{{ path('app_login') }}">login</a> to book this tour.</p>
+            {% endif %}
+        </div>
+    </div>
+
     {% if is_granted('ROLE_GUIDE') and app.user == tour.guide or is_granted('ROLE_ADMIN') %}
         <a href="{{ path('app_tour_edit', {'id': tour.id}) }}" class="btn btn-warning">Edit</a>
     {% endif %}
