@@ -21,7 +21,11 @@
     {% for review in approved_reviews %}
         <div class="list-group-item">
             <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">{{ review.user.username }}</h5>
+                <h5 class="mb-1">
+                    <a href="{{ path('app_profile_show', {'id': review.user.id}) }}" class="text-decoration-none text-dark">
+                        {{ review.user.username }}
+                    </a>
+                </h5>
                 <small>{{ review.createdAt|date('Y-m-d') }}</small>
             </div>
             <p class="mb-1">

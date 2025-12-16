@@ -20,6 +20,25 @@
                 <td>{{ tour_personnalise.description }}</td>
             </tr>
             <tr>
+                <th>Guide</th>
+                <td>
+                    {% if tour_personnalise.guide %}
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ path('app_profile_show', {'id': tour_personnalise.guide.id}) }}" class="text-decoration-none fw-bold">
+                                {{ tour_personnalise.guide.username }}
+                            </a>
+                            {% if app.user and app.user != tour_personnalise.guide and 'ROLE_ADMIN' not in app.user.roles %}
+                                <a href="{{ path('app_message_chat', {'id': tour_personnalise.guide.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-chat-dots-fill"></i> Contact
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <span class="text-muted">No guide assigned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
                 <th>Duration</th>
                 <td>{{ tour_personnalise.duration }}</td>
             </tr>

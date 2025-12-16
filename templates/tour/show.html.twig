@@ -8,7 +8,17 @@
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">Tour Info</h5>
-             <p><strong>Guide:</strong> {{ tour.guide.username }}</p>
+             <p class="d-flex align-items-center gap-2">
+                 <strong>Guide:</strong> 
+                 {% if tour.guide %}
+                    <a href="{{ path('app_profile_show', {'id': tour.guide.id}) }}" class="text-decoration-none fw-bold">{{ tour.guide.username }}</a>
+                    {% if app.user and app.user != tour.guide and 'ROLE_ADMIN' not in app.user.roles %}
+                        <a href="{{ path('app_message_chat', {'id': tour.guide.id}) }}" class="btn btn-sm btn-outline-primary ms-2"><i class="bi bi-envelope-fill"></i> Contact</a>
+                    {% endif %}
+                 {% else %}
+                    <span class="text-muted">No guide assigned</span>
+                 {% endif %}
+             </p>
              <p><strong>Price:</strong> ${{ tour.price }}</p>
              <p><strong>Duration:</strong> {{ tour.duration }} hours</p>
              <p><strong>Max Persons:</strong> {{ tour.maxPersons }}</p>

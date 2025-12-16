@@ -33,6 +33,7 @@ class AppFixtures extends Fixture
         $manager->persist($admin);
 
         // 2. Create 3 Guides
+        $guides = [];
         for ($i = 1; $i <= 3; $i++) {
             $guide = new Guide();
             $guide->setEmail("guide$i@tuniway.com");
@@ -45,6 +46,7 @@ class AppFixtures extends Fixture
             $guide->setPhoneNumber("555-00$i");
             $guide->setCreatedAt(new \DateTimeImmutable());
             $manager->persist($guide);
+            $guides[] = $guide;
         }
 
         // 3. Create 5 Users
@@ -245,7 +247,48 @@ class AppFixtures extends Fixture
 
 
 
-        // 5. Create Sample Events
+        // 5. Create Sample Tours with Guides
+        $toursData = [
+            [
+                'title' => 'Desert Adventure',
+                'description' => 'A 2-day trip to the heart of the Sahara.',
+                'guide' => $guides[0],
+                'price' => 200.00,
+                'duration' => 2,
+                'maxPersons' => 4
+            ],
+            [
+                'title' => 'Historic Tunis Walk',
+                'description' => 'Explore the hidden gems of the Medina.',
+                'guide' => $guides[1],
+                'price' => 50.00,
+                'duration' => 4,
+                'maxPersons' => 10
+            ],
+            [
+                'title' => 'Djerba Island Tour',
+                'description' => 'Discover the beautiful beaches and culture of Djerba.',
+                'guide' => $guides[2],
+                'price' => 150.00,
+                'duration' => 8,
+                'maxPersons' => 6
+            ]
+        ];
+
+        foreach ($toursData as $data) {
+            $tour = new \App\Entity\TourPersonnalise();
+            $tour->setTitle($data['title']);
+            $tour->setDescription($data['description']);
+            $tour->setGuide($data['guide']);
+            $tour->setPrice($data['price']);
+            $tour->setDuration($data['duration']);
+            $tour->setMaxPersons($data['maxPersons']);
+            $tour->setCreatedAt(new \DateTimeImmutable());
+
+            $manager->persist($tour);
+        }
+
+        // 6. Create Sample Events
         $eventsData = [
             [
                 'name' => 'Tunis Jazz Festival',

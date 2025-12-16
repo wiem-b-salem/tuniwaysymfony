@@ -121,4 +121,15 @@ class Review
 
         return $this;
     }
+    public function getTour(): ?TourPersonnalise
+    {
+        return $this->tour;
+    }
+
+    public function setTour(?TourPersonnalise $tour): static
+    {
+        $this->tour = $tour;
+
+        return $this;
+    }
 }

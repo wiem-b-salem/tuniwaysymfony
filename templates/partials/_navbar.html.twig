@@ -37,6 +37,24 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
+                
+                {% if app.user and not is_granted('ROLE_ADMIN') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_message_index') }}">
+                            <i class="bi bi-envelope"></i> Inbox
+                            {% set unreadCount = 0 %}
+                            {% for msg in app.user.receivedMessages %}
+                                {% if not msg.isRead %}
+                                    {% set unreadCount = unreadCount + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if unreadCount > 0 %}
+                                <span class="badge bg-danger rounded-pill">{{ unreadCount }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
 
             <ul class="navbar-nav">

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat with {{ partner.username }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 h-100">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom-0 py-3 d-flex align-items-center">
+                <a href="{{ path('app_message_index') }}" class="btn btn-sm btn-outline-secondary me-3"><i class="bi bi-arrow-left"></i></a>
+                <h5 class="mb-0 fw-bold text-primary">{{ partner.username }}</h5>
+            </div>
+            
+            <div class="card-body overflow-auto bg-light" style="height: 60vh;">
+                <div class="d-flex flex-column">
+                {% for message in messages %}
+                    <div class="d-flex mb-3 {% if message.sender == app.user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                        <div class="card border-0 shadow-sm {% if message.sender == app.user %}bg-primary text-white{% else %}bg-white{% endif %}" style="max-width: 75%;">
+                            <div class="card-body p-2 px-3">
+                                <p class="mb-1">{{ message.content }}</p>
+                                <small class="{% if message.sender == app.user %}text-white-50{% else %}text-muted{% endif %} d-block text-end" style="font-size: 0.7rem;">
+                                    {{ message.sentAt|date('H:i') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted my-5">Start the conversation!</p>
+                {% endfor %}
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-top-0 py-3">
+                <form method="post" class="d-flex gap-2">
+                    <input type="text" name="content" class="form-control rounded-pill" placeholder="Type a message..." required autocomplete="off">
+                    <button type="submit" class="btn btn-primary rounded-circle p-2" style="width: 45px; height: 45px;">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
