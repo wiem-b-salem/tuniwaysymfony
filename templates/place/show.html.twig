@@ -46,9 +46,18 @@
         </tbody>
     </table>
 
+    {% if app.user %}
+        <a href="{{ path('app_favori_toggle', {'id': place.id}) }}" class="btn btn-outline-danger mb-3">
+             <i class="bi bi-heart"></i> Add/Remove Favorite
+        </a>
+        <br>
+    {% endif %}
+
     <a href="{{ path('app_place_index') }}">back to list</a>
 
-    <a href="{{ path('app_place_edit', {'id': place.id}) }}">edit</a>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_place_edit', {'id': place.id}) }}">edit</a>
 
-    {{ include('place/_delete_form.html.twig') }}
+        {{ include('place/_delete_form.html.twig') }}
+    {% endif %}
 {% endblock %}

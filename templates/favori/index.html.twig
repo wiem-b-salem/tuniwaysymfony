@@ -1,35 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Favori index{% endblock %}
+{% block title %}My Favorites{% endblock %}
 
 {% block body %}
-    <h1>Favori index</h1>
+    <h1>My Favorites</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>CreatedAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for favori in favoris %}
-            <tr>
-                <td>{{ favori.id }}</td>
-                <td>{{ favori.createdAt ? favori.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_favori_show', {'id': favori.id}) }}">show</a>
-                    <a href="{{ path('app_favori_edit', {'id': favori.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_favori_new') }}">Create new</a>
+    <div class="row">
+    {% for favori in favoris %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if favori.place.imageUrl %}
+                    <img src="{{ favori.place.imageUrl }}" class="card-img-top" alt="{{ favori.place.name }}">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <span>No Image</span>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ favori.place.name }}</h5>
+                    <p class="card-text">{{ favori.place.description|slice(0, 100) ~ '...' }}</p>
+                    <a href="{{ path('app_place_show', {'id': favori.place.id}) }}" class="btn btn-primary">View Place</a>
+                    <a href="{{ path('app_favori_toggle', {'id': favori.place.id}) }}" class="btn btn-outline-danger btn-sm">Remove</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <p>You have no favorites yet.</p>
+        <a href="{{ path('app_place_index') }}">Explore Places</a>
+    {% endfor %}
+    </div>
 {% endblock %}

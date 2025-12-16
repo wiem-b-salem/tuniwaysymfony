@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Service\FavoriService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,111 +22,46 @@ final class FavoriController extends AbstractController
     }
 
     #[Route(name: 'app_favori_index', methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(): Response
     {
-        return $this->json(
-            $this->favoriService->findAll(),
-            Response::HTTP_OK,
-            [],
-            ['groups' => 'favori:read']
-        );
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        return $this->render('favori/index.html.twig', [
+            'favoris' => $this->favoriService->findByUser($user),
+        ]);
     }
 
-    #[Route('/new', name: 'app_favori_new', methods: ['POST'])]
-    public function new(Request $request): JsonResponse
+    #[Route('/toggle/{id}', name: 'app_favori_toggle', methods: ['GET', 'POST'])]
+    public function toggle(int $id, \App\Service\PlaceService $placeService): Response
     {
-        $data = $this->parsePayload($request);
-        if ($data === null) {
-            return $this->json(['error' => 'Invalid JSON payload'], Response::HTTP_BAD_REQUEST);
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
         }
 
-        $userId = $data['userId'] ?? null;
-        $placeId = $data['placeId'] ?? null;
-
-        if (!$userId || !$placeId) {
-            return $this->json(['error' => 'Both "userId" and "placeId" are required'], Response::HTTP_BAD_REQUEST);
+        $place = $placeService->find($id);
+        if (!$place) {
+            throw $this->createNotFoundException('Place not found');
         }
 
-        $user = $this->entityManager->getRepository(User::class)->find($userId);
-        $place = $this->entityManager->getRepository(Place::class)->find($placeId);
+        $existing = $this->favoriService->findUserFavoriteForPlace($user, $id);
 
-        if (!$user || !$place) {
-            return $this->json(['error' => 'User or Place not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $favori = new Favori();
-        $favori->setUser($user);
-        $favori->setPlace($place);
-
-        $favori = $this->favoriService->create($favori);
-
-        return $this->json($favori, Response::HTTP_CREATED, [], ['groups' => 'favori:read']);
-    }
-
-    #[Route('/{id}', name: 'app_favori_show', methods: ['GET'])]
-    public function show(int $id): JsonResponse
-    {
-        $favori = $this->favoriService->find($id);
-        if (!$favori) {
-            return $this->json(['error' => 'Favorite not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        return $this->json($favori, Response::HTTP_OK, [], ['groups' => 'favori:read']);
-    }
-
-    #[Route('/{id}/edit', name: 'app_favori_edit', methods: ['PUT'])]
-    public function edit(int $id, Request $request): JsonResponse
-    {
-        $favori = $this->favoriService->find($id);
-        if (!$favori) {
-            return $this->json(['error' => 'Favorite not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $data = $this->parsePayload($request);
-        if ($data === null) {
-            return $this->json(['error' => 'Invalid JSON payload'], Response::HTTP_BAD_REQUEST);
-        }
-
-        if (isset($data['userId'])) {
-            $user = $this->entityManager->getRepository(User::class)->find($data['userId']);
-            if (!$user) {
-                return $this->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
-            }
+        if ($existing) {
+            $this->favoriService->delete($existing);
+            $this->addFlash('success', 'Removed from favorites.');
+        } else {
+            $favori = new Favori();
             $favori->setUser($user);
-        }
-
-        if (isset($data['placeId'])) {
-            $place = $this->entityManager->getRepository(Place::class)->find($data['placeId']);
-            if (!$place) {
-                return $this->json(['error' => 'Place not found'], Response::HTTP_NOT_FOUND);
-            }
             $favori->setPlace($place);
+            $this->favoriService->create($favori);
+            $this->addFlash('success', 'Added to favorites.');
         }
 
-        $favori = $this->favoriService->update($favori);
-
-        return $this->json($favori, Response::HTTP_OK, [], ['groups' => 'favori:read']);
-    }
-
-    #[Route('/{id}', name: 'app_favori_delete', methods: ['DELETE'])]
-    public function delete(int $id): JsonResponse
-    {
-        $favori = $this->favoriService->find($id);
-        if (!$favori) {
-            return $this->json(['error' => 'Favorite not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $this->favoriService->delete($favori);
-
-        return $this->json(['message' => 'Favorite deleted successfully'], Response::HTTP_OK);
-    }
-
-    private function parsePayload(Request $request): ?array
-    {
-        try {
-            return $request->toArray();
-        } catch (\JsonException) {
-            return null;
-        }
+        // Redirect back to the place page or the favorites list
+        // Using HTTP_REFERER if safe, or default to place show
+        return $this->redirectToRoute('app_place_show', ['id' => $id]);
     }
 }
