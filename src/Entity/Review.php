@@ -6,6 +6,7 @@ use App\Repository\ReviewRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Entity\TourPersonnalise;
 
 #[ORM\Entity(repositoryClass: ReviewRepository::class)]
 class Review
@@ -28,16 +29,37 @@ class Review
     #[Groups(['review:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(length: 20)]
+    #[Groups(['review:read'])]
+    private ?string $status = 'PENDING';
+
     #[ORM\ManyToOne(inversedBy: 'reviews')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'reviews')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Place $place = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reviews')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?TourPersonnalise $tour = null;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
     }
 
     public function getRating(): ?int

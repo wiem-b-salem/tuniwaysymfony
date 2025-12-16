@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Review Moderation{% endblock %}
+
+{% block body %}
+    <h1>Review Moderation Dashboard</h1>
+
+    {% if reviews is empty %}
+        <div class="alert alert-info">No pending reviews.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User</th>
+                        <th>Item</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for review in reviews %}
+                    <tr>
+                        <td>{{ review.createdAt|date('Y-m-d H:i') }}</td>
+                        <td>{{ review.user.username }}</td>
+                        <td>
+                            {% if review.place %}
+                                Place: <a href="{{ path('app_place_show', {'id': review.place.id}) }}">{{ review.place.name }}</a>
+                            {% elseif review.tour %}
+                                Tour: <a href="{{ path('app_tour_show', {'id': review.tour.id}) }}">{{ review.tour.title }}</a>
+                            {% endif %}
+                        </td>
+                        <td>{{ review.rating }}/5</td>
+                        <td>{{ review.comment }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <form method="post" action="{{ path('app_review_approve', {'id': review.id}) }}" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ review.id) }}">
+                                    <button class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{{ path('app_review_delete', {'id': review.id}) }}" style="display:inline-block; margin-left: 5px;" onsubmit="return confirm('Delete this review?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ review.id) }}">
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

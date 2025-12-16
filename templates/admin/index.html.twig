@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+    <h1 class="mb-4">Admin Dashboard</h1>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">User Management</h5>
+                    <p class="card-text">Manage Admins, Guides, and Regular Users.</p>
+                    <a href="{{ path('app_user_index') }}" class="btn btn-primary">Manage Users</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Review Moderation</h5>
+                    <p class="card-text">Approve or delete user reviews.</p>
+                    <a href="{{ path('app_review_admin_index') }}" class="btn btn-primary">Manage Reviews</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Places</h5>
+                    <p class="card-text">Manage Places database.</p>
+                    <a href="{{ path('app_place_index') }}" class="btn btn-primary">Manage Places</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Tours</h5>
+                    <p class="card-text">Manage Tours created by guides.</p>
+                    <a href="{{ path('app_tour_index') }}" class="btn btn-primary">Manage Tours</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

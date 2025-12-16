@@ -33,4 +33,6 @@
         <a href="{{ path('app_tour_edit', {'id': tour.id}) }}" class="btn btn-warning">Edit</a>
     {% endif %}
 
+    <hr>
+    {{ include('partials/_reviews.html.twig', {'reviews': tour.reviews, 'type': 'tour', 'subject_id': tour.id}) }}
 {% endblock %}

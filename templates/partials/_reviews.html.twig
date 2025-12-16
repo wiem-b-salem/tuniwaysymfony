@@ -1,0 +1,58 @@
+{# templates/partials/_reviews.html.twig #}
+
+<h3>Reviews</h3>
+
+{% set approved_reviews = reviews|filter(r => r.status == 'APPROVED') %}
+{% set pending_reviews = reviews|filter(r => r.status == 'PENDING' and (app.user and r.user == app.user)) %}
+
+<div class="mb-4">
+    {% if approved_reviews|length > 0 %}
+        {% set avg = 0 %}
+        {% for r in approved_reviews %}
+            {% set avg = avg + r.rating %}
+        {% endfor %}
+        <h4>Average Rating: {{ (avg / approved_reviews|length)|number_format(1) }} / 5</h4>
+    {% else %}
+        <p>No ratings yet.</p>
+    {% endif %}
+</div>
+
+<div class="list-group mb-4">
+    {% for review in approved_reviews %}
+        <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ review.user.username }}</h5>
+                <small>{{ review.createdAt|date('Y-m-d') }}</small>
+            </div>
+            <p class="mb-1">
+                {% for i in 1..5 %}
+                    <span class="{{ i <= review.rating ? 'text-warning' : 'text-muted' }}">★</span>
+                {% endfor %}
+            </p>
+            <p class="mb-1">{{ review.comment }}</p>
+        </div>
+    {% endfor %}
+
+    {% for review in pending_reviews %}
+        <div class="list-group-item list-group-item-warning">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ review.user.username }} (You)</h5>
+                <small>Pending Approval</small>
+            </div>
+            <p class="mb-1">Rating: {{ review.rating }}</p>
+            <p class="mb-1">{{ review.comment }}</p>
+            <small><i>This review is waiting for moderation.</i></small>
+        </div>
+    {% endfor %}
+</div>
+
+{% if is_granted('ROLE_USER') %}
+    <div class="card">
+        <div class="card-body">
+            <h5>Leave a Review</h5>
+            {{ render(controller('App\\Controller\\ReviewController::reviewForm', {'type': type, 'id': subject_id})) }}
+        </div>
+    </div>
+{% elseif not app.user %}
+    <p>Please <a href="{{ path('app_login') }}">login</a> to leave a review.</p>
+{% endif %}

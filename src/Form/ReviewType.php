@@ -2,11 +2,10 @@
 
 namespace App\Form;
 
-use App\Entity\Place;
 use App\Entity\Review;
-use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,18 +14,22 @@ class ReviewType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('rating')
-            ->add('comment')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
+            ->add('rating', ChoiceType::class, [
+                'choices' => [
+                    '5 Stars' => 5,
+                    '4 Stars' => 4,
+                    '3 Stars' => 3,
+                    '2 Stars' => 2,
+                    '1 Star' => 1,
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'label' => 'Rating',
             ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
-            ->add('place', EntityType::class, [
-                'class' => Place::class,
-                'choice_label' => 'id',
+            ->add('comment', TextareaType::class, [
+                'required' => false,
+                'label' => 'Comment (Optional)',
+                'attr' => ['rows' => 3],
             ])
         ;
     }

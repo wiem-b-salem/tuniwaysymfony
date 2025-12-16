@@ -55,6 +55,9 @@
 
     <a href="{{ path('app_place_index') }}">back to list</a>
 
+    <hr>
+    {{ include('partials/_reviews.html.twig', {'reviews': place.reviews, 'type': 'place', 'subject_id': place.id}) }}
+
     {% if is_granted('ROLE_ADMIN') %}
         <a href="{{ path('app_place_edit', {'id': place.id}) }}">edit</a>
 

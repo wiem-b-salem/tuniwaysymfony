@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TourPersonnaliseRepository;
+use App\Entity\Review;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -56,10 +57,51 @@ class TourPersonnalise
     #[ORM\ManyToMany(targetEntity: Place::class)]
     private Collection $places;
 
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'tour')]
+    private Collection $reviews;
+
     public function __construct()
     {
         $this->places = new ArrayCollection();
+        $this->reviews = new ArrayCollection();
     }
+
+    // ... (keep existing methods)
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function addReview(Review $review): static
+    {
+        if (!$this->reviews->contains($review)) {
+            $this->reviews->add($review);
+            $review->setTour($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReview(Review $review): static
+    {
+        if ($this->reviews->removeElement($review)) {
+            // set the owning side to null (unless already changed)
+            if ($review->getTour() === $this) {
+                $review->setTour(null);
+            }
+        }
+
+        return $this;
+    }
+    // ... (removed closing brace)
+
 
     public function getId(): ?int
     {
