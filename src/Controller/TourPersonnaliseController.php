@@ -24,7 +24,7 @@ final class TourPersonnaliseController extends AbstractController
     #[Route(name: 'app_tour_index', methods: ['GET'])]
     public function index(): Response
     {
-        return $this->render('tour/index.html.twig', [
+        return $this->render('tour_personnalise/index.html.twig', [
             'tours' => $this->tourService->findAll(),
         ]);
     }
@@ -39,12 +39,12 @@ final class TourPersonnaliseController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->render('tour/my_tours.html.twig', [
+        return $this->render('tour_personnalise/my_tours.html.twig', [
             'tours' => $user->getTourPersonnalises(),
         ]);
     }
 
-    #[Route('/new', name: 'app_tour_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_tour_personnalise_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_GUIDE')]
     public function new(Request $request): Response
     {
@@ -58,16 +58,18 @@ final class TourPersonnaliseController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->tourService->create($tour);
 
+            $this->addFlash('success', 'Tour created successfully!');
+
             return $this->redirectToRoute('app_tour_my_tours', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('tour/new.html.twig', [
+        return $this->render('tour_personnalise/new.html.twig', [
             'tour' => $tour,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_tour_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_tour_personnalise_show', methods: ['GET'])]
     public function show(int $id): Response
     {
         $tour = $this->tourService->find($id);
@@ -75,12 +77,12 @@ final class TourPersonnaliseController extends AbstractController
             throw $this->createNotFoundException('Tour not found');
         }
 
-        return $this->render('tour/show.html.twig', [
+        return $this->render('tour_personnalise/show.html.twig', [
             'tour' => $tour,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_tour_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_tour_personnalise_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_GUIDE')]
     public function edit(int $id, Request $request): Response
     {
@@ -100,16 +102,18 @@ final class TourPersonnaliseController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->tourService->update($tour);
 
+            $this->addFlash('success', 'Tour updated successfully!');
+
             return $this->redirectToRoute('app_tour_my_tours', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('tour/edit.html.twig', [
+        return $this->render('tour_personnalise/edit.html.twig', [
             'tour' => $tour,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_tour_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_tour_personnalise_delete', methods: ['POST'])]
     #[IsGranted('ROLE_GUIDE')]
     public function delete(Request $request, int $id): Response
     {
@@ -123,8 +127,10 @@ final class TourPersonnaliseController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        if ($this->isCsrfTokenValid('delete' . $tour->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $tour->getId(), $request->getPayload()->getString('_token'))) {
             $this->tourService->delete($tour);
+
+            $this->addFlash('success', 'Tour deleted successfully!');
         }
 
         return $this->redirectToRoute('app_tour_my_tours', [], Response::HTTP_SEE_OTHER);

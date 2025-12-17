@@ -1,11 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New TourPersonnalise{% endblock %}
+{% block title %}Create New Tour - TuniWay{% endblock %}
 
 {% block body %}
-    <h1>Create new TourPersonnalise</h1>
-
-    {{ include('tour_personnalise/_form.html.twig') }}
-
-    <a href="{{ path('app_tour_personnalise_index') }}">back to list</a>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="h3 mb-0">Create New Personalized Tour</h1>
+                    </div>
+                    <div class="card-body p-4">
+                        {{ include('tour_personnalise/_form.html.twig', {'button_label': 'Create Tour'}) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

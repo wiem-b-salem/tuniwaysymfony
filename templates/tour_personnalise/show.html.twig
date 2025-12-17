@@ -1,65 +1,145 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}TourPersonnalise{% endblock %}
+{% block title %}{{ tour.title }} - TuniWay{% endblock %}
 
 {% block body %}
-    <h1>TourPersonnalise</h1>
+    <div class="container mt-5">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ tour_personnalise.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ tour_personnalise.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ tour_personnalise.description }}</td>
-            </tr>
-            <tr>
-                <th>Guide</th>
-                <td>
-                    {% if tour_personnalise.guide %}
-                        <div class="d-flex align-items-center gap-2">
-                            <a href="{{ path('app_profile_show', {'id': tour_personnalise.guide.id}) }}" class="text-decoration-none fw-bold">
-                                {{ tour_personnalise.guide.username }}
-                            </a>
-                            {% if app.user and app.user != tour_personnalise.guide and 'ROLE_ADMIN' not in app.user.roles %}
-                                <a href="{{ path('app_message_chat', {'id': tour_personnalise.guide.id}) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-chat-dots-fill"></i> Contact
-                                </a>
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="h3 mb-0">{{ tour.title }}</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h5>Description</h5>
+                            <p class="text-muted">{{ tour.description }}</p>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Tour Details</h5>
+                                <ul class="list-unstyled">
+                                    <li><strong>Duration:</strong> {{ tour.duration }} hours</li>
+                                    <li><strong>Price:</strong> {{ tour.price }} TND per person</li>
+                                    <li><strong>Max Persons:</strong> {{ tour.maxPersons }}</li>
+                                    <li><strong>Created:</strong> {{ tour.createdAt ? tour.createdAt|date('Y-m-d') : '' }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Guide</h5>
+                                {% if tour.guide %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fw-bold">{{ tour.guide.username }}</span>
+                                        {% if app.user and app.user != tour.guide and 'ROLE_ADMIN' not in app.user.roles %}
+                                            <a href="{{ path('app_message_chat', {'id': tour.guide.id}) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-chat-dots-fill"></i> Contact
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">No guide assigned</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Places to Visit ({{ tour.places|length }})</h5>
+                            {% if tour.places is not empty %}
+                                <div class="list-group">
+                                    {% for place in tour.places %}
+                                        <div class="list-group-item">
+                                            <i class="bi bi-geo-alt-fill text-primary"></i> {{ place.name }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No places selected yet</p>
                             {% endif %}
                         </div>
-                    {% else %}
-                        <span class="text-muted">No guide assigned</span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>Duration</th>
-                <td>{{ tour_personnalise.duration }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ tour_personnalise.price }}</td>
-            </tr>
-            <tr>
-                <th>MaxPersons</th>
-                <td>{{ tour_personnalise.maxPersons }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ tour_personnalise.createdAt ? tour_personnalise.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
 
-    <a href="{{ path('app_tour_personnalise_index') }}">back to list</a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ path('app_tour_index') }}" class="btn btn-secondary">Back to List</a>
+                            {% if app.user and app.user == tour.guide %}
+                                <a href="{{ path('app_tour_personnalise_edit', {'id': tour.id}) }}" class="btn btn-warning">Edit</a>
+                                <form method="post" action="{{ path('app_tour_personnalise_delete', {'id': tour.id}) }}" style="display:inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tour.id) }}">
+                                    <button class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this tour?')">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <a href="{{ path('app_tour_personnalise_edit', {'id': tour_personnalise.id}) }}">edit</a>
+            {# Booking Form - Only for logged-in clients #}
+            <div class="col-lg-4">
+                {% if app.user and app.user != tour.guide %}
+                    <div class="card shadow-sm sticky-top" style="top: 20px;">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Book This Tour</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{{ path('app_reservation_book', {'id': tour.id}) }}">
+                                <div class="mb-3">
+                                    <label for="date" class="form-label">Select Date</label>
+                                    <input type="date" class="form-control" id="date" name="date" required min="{{ 'now'|date('Y-m-d') }}">
+                                </div>
 
-    {{ include('tour_personnalise/_delete_form.html.twig') }}
+                                <div class="mb-3">
+                                    <label for="persons" class="form-label">Number of Persons</label>
+                                    <input type="number" class="form-control" id="persons" name="persons" min="1" max="{{ tour.maxPersons }}" value="1" required>
+                                    <small class="form-text text-muted">Max: {{ tour.maxPersons }} persons</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="alert alert-info mb-0">
+                                        <strong>Total Price:</strong>
+                                        <span id="totalPrice">{{ tour.price }}</span> TND
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-circle"></i> Book Now
+                                </button>
+                            </form>
+
+                            <script>
+                                document.getElementById('persons').addEventListener('input', function() {
+                                    const persons = parseInt(this.value) || 1;
+                                    const pricePerPerson = {{ tour.price }};
+                                    const total = persons * pricePerPerson;
+                                    document.getElementById('totalPrice').textContent = total.toFixed(2);
+                                });
+                            </script>
+                        </div>
+                    </div>
+                {% elseif not app.user %}
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-lock fs-1 text-muted mb-3 d-block"></i>
+                            <h5>Want to book this tour?</h5>
+                            <p class="text-muted">Please login or register to make a reservation</p>
+                            <a href="{{ path('app_login') }}" class="btn btn-primary">Login</a>
+                            <a href="{{ path('app_register') }}" class="btn btn-outline-primary">Register</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

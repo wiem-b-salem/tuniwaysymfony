@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
+use App\Entity\Client;
+use App\Entity\Guide;
 use App\Service\JwtService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -27,25 +27,38 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager
     ): Response {
-        $user = new User();
-        $form = $this->createForm(\App\Form\RegistrationFormType::class, $user);
+        $form = $this->createForm(\App\Form\RegistrationFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
+            $data = $form->getData();
+            $selectedRole = $form->get('role')->getData();
+
+            // Create the appropriate user type based on selection
+            if ($selectedRole === 'GUIDE') {
+                $user = new Guide();
+            } else {
+                $user = new Client();
+            }
+
+            // Set user data
+            $user->setEmail($data->getEmail());
+            $user->setUsername($data->getUsername());
+            $user->setRole($selectedRole);
+            $user->setRoles([$selectedRole]);
+
+            // Encode the plain password
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
                     $form->get('plainPassword')->getData()
                 )
             );
-            $user->setRole('CLIENT');
-            $user->setRoles(['CLIENT']);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
+            $this->addFlash('success', 'Registration successful! You can now login.');
 
             return $this->redirectToRoute('app_login');
         }

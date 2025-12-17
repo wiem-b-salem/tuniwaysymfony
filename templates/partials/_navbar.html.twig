@@ -7,7 +7,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 {% if is_granted('ROLE_ADMIN') %}
-                     <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_admin_dashboard') }}">Admin Dashboard</a>
                     </li>
                 {% else %}
@@ -21,23 +21,28 @@
                         <a class="nav-link" href="{{ path('app_tour_index') }}">Shared Tours</a>
                     </li>
                     {% if is_granted('ROLE_USER') %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_reservation_index') }}">Mes Réservations</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_favori_index') }}">Mes Favoris</a>
-                        </li>
-                        {% if is_granted('ROLE_GUIDE') %}
+                        {% set isGuide = is_granted('ROLE_GUIDE') or 'GUIDE' in app.user.roles %}
+                        {% if isGuide %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_tour_personnalise_new') }}">Créer Tour</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_tour_my_tours') }}">My Tours</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_reservation_manage') }}">Incoming Reservations</a>
                             </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_reservation_index') }}">Mes Réservations</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_favori_index') }}">Mes Favoris</a>
+                            </li>
                         {% endif %}
                     {% endif %}
                 {% endif %}
-                
+
                 {% if app.user and not is_granted('ROLE_ADMIN') %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_message_index') }}">
@@ -48,7 +53,7 @@
                                     {% set unreadCount = unreadCount + 1 %}
                                 {% endif %}
                             {% endfor %}
-                            
+
                             {% if unreadCount > 0 %}
                                 <span class="badge bg-danger rounded-pill">{{ unreadCount }}</span>
                             {% endif %}
