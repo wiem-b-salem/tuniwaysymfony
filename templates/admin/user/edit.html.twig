@@ -3,12 +3,21 @@
 {% block title %}Edit User{% endblock %}
 
 {% block body %}
-    <h1>Edit User</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="h3 mb-4 fw-bold text-primary">Edit User</h1>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-primary">{{ button_label|default('Update') }}</button>
-    {{ form_end(form) }}
-
-    <a href="{{ path('app_user_index') }}">Back to list</a>
+                    {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <div class="mt-4 d-flex justify-content-between">
+                            <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">Back to List</a>
+                            <button class="btn btn-primary">{{ button_label|default('Update User') }}</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

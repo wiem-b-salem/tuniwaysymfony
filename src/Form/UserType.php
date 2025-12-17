@@ -14,16 +14,30 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', TextType::class, ['disabled' => true])
-            ->add('username')
+            ->add('email', TextType::class, [
+                'disabled' => true,
+                'label' => 'Email Address',
+                'row_attr' => ['class' => 'mb-3'],
+                'label_attr' => ['class' => 'form-label'],
+                'attr' => ['class' => 'form-control'],
+            ])
+            ->add('username', null, [
+                'label' => 'Username',
+                'row_attr' => ['class' => 'mb-3'],
+                'label_attr' => ['class' => 'form-label'],
+                'attr' => ['class' => 'form-control'],
+            ])
             ->add('roles', ChoiceType::class, [
                 'choices' => [
                     'User' => 'ROLE_USER',
                     'Guide' => 'ROLE_GUIDE',
                     'Admin' => 'ROLE_ADMIN',
                 ],
+                'label' => 'Roles',
                 'multiple' => true,
                 'expanded' => true,
+                'row_attr' => ['class' => 'mb-3'],
+                'label_attr' => ['class' => 'form-label'],
             ])
             ->add('role', ChoiceType::class, [
                 'choices' => [
@@ -33,6 +47,9 @@ class UserType extends AbstractType
                 ],
                 'label' => 'Primary Role (Legacy)',
                 'required' => false,
+                'row_attr' => ['class' => 'mb-3'],
+                'label_attr' => ['class' => 'form-label'],
+                'attr' => ['class' => 'form-select'],
             ])
         ;
     }

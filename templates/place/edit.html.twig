@@ -3,11 +3,24 @@
 {% block title %}Edit Place{% endblock %}
 
 {% block body %}
-    <h1>Edit Place</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h3 fw-bold text-primary">Edit Place</h1>
+                        {{ include('place/_delete_form.html.twig') }}
+                    </div>
 
-    {{ include('place/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_place_index') }}">back to list</a>
-
-    {{ include('place/_delete_form.html.twig') }}
+                    {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <div class="mt-4 d-flex justify-content-between">
+                            <a href="{{ path('app_place_index') }}" class="btn btn-outline-secondary">Back to List</a>
+                            <button class="btn btn-primary">{{ button_label|default('Update Place') }}</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
